@@ -1,6 +1,11 @@
 #include <ESP8266WiFi.h>
 #include <WebSocketsServer.h>
-#include "Secrets.hpp"
+#include <ArduinoJson.h>
+//#include "Secrets.hpp"
+String ssid = "N3P7UN3";
+String password = "1337m0nk3y";
+String apSSID = "IOT_HUB_AP";
+String apPassword = "RaspBerry";
 
 WebSocketsServer webSocketData = WebSocketsServer(81);
 WebSocketsServer webSocketCommand = WebSocketsServer(82);
@@ -23,7 +28,9 @@ void webSocketDataEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t le
         IPAddress ip = webSocketData.remoteIP(num);
         Serial.printf("[%u] Received data from %d.%d.%d.%d: %s", num, ip[0], ip[1], ip[2], ip[3], payload);
         Serial.println();
-        webSocketData.sendTXT(1, payload, length);
+        //webSocketData.sendTXT(1, payload, length);
+        // printJSON(payload, length);
+        webSocketData.sendTXT(num, payload, length);
       }
       break;
   }
@@ -68,12 +75,7 @@ void loop() {
   webSocketCommand.loop();
   
   // Send random data to connected clients every 5 seconds
-  static unsigned long lastSendTime = 0;
-  if (millis() - lastSendTime > 5000) {
-    String command = "Random Data: " + String(random(0, 1024));
-    webSocketCommand.broadcastTXT(command);
-    lastSendTime = millis();
-  }
+  
 }
 
 void setupWiFi() {
@@ -97,3 +99,47 @@ void setupAP() {
   Serial.print("IP Address: ");
   Serial.println(WiFi.softAPIP());
 }
+
+
+void printJSON(uint8_t * payload, size_t length) {
+  // Create a JSON document
+  // Ensure the payload is null-terminated
+  char jsonBuffer[length + 1];
+  memcpy(jsonBuffer, payload, length);
+  jsonBuffer[length] = '\0';
+
+  // Create a JSON document
+  StaticJsonDocument<192> doc;
+
+  // Deserialize the JSON document
+  DeserializationError error = deserializeJson(doc, jsonBuffer);
+
+  // Error handling
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return;
+  }
+
+  Serial.println(jsonBuffer);
+
+  // int serial = doc["serial"]; // 2
+  // long time = doc["time"]; // 1351824120
+
+  // JsonArray data = doc["data"];
+  // float data_0 = data[0]; // 48.75
+  // float data_1 = data[1]; // 2.3
+  // float data_2 = data[2]; // 30.22
+  // float data_3 = data[3]; // 10.1
+
+// // Print JSON document values
+//   Serial.println(doc["serial"]);
+//   Serial.println(doc["time"]);
+//   JsonArray data = doc["data"];
+
+//   Serial.println(data[0]);
+//   Serial.println(data[1]);
+//   //Serial.println(data[2]);
+//   // Modify JSON document values
+
+  }
