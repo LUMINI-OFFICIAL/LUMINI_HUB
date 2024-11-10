@@ -2,11 +2,12 @@
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
 //#include "Secrets.hpp"
+/*
 String ssid = "N3P7UN3";
 String password = "1337m0nk3y";
 String apSSID = "IOT_HUB_AP";
 String apPassword = "RaspBerry";
-
+*/
 WebSocketsServer webSocketData = WebSocketsServer(81);
 WebSocketsServer webSocketCommand = WebSocketsServer(82);
 
