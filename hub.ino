@@ -72,10 +72,7 @@ void setup() {
 
 void loop() {
   webSocketData.loop();
-  webSocketCommand.loop();
-  
-  // Send random data to connected clients every 5 seconds
-  
+  webSocketCommand.loop(); 
 }
 
 void setupWiFi() {
